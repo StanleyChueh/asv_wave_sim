@@ -1,0 +1,2 @@
+/home/hsiao/gz_ws/src/asv_wave_sim/gz-waves/src/gui/plugins/waves_control/CMakeFiles/edit_cache.dir
+/home/hsiao/gz_ws/src/asv_wave_sim/gz-waves/src/gui/plugins/waves_control/CMakeFiles/rebuild_cache.dir

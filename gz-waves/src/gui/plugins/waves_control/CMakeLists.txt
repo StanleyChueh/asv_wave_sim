@@ -11,8 +11,8 @@ set(CMAKE_AUTOMOC ON)
 # Garden (default)
 if("$ENV{GZ_VERSION}" STREQUAL "garden" OR NOT DEFINED "ENV{GZ_VERSION}")
 
-  find_package(gz-sim7 REQUIRED COMPONENTS gui)
-  set(GZ_SIM_VER ${gz-sim7_VERSION_MAJOR})
+  find_package(gz-sim8 REQUIRED COMPONENTS gui)
+  set(GZ_SIM_VER ${gz-sim8_VERSION_MAJOR})
  
   message(STATUS "Compiling against Gazebo Garden")
 
