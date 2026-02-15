@@ -57,6 +57,20 @@
   direction: GZ_TO_ROS
   lazy: true
 
+- gz_topic_name: "wamv/sensors/cameras/front_right_camera_sensor/image_raw"
+  ros_topic_name: "/wamv/sensors/cameras/front_right_camera_sensor/image_raw"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  direction: GZ_TO_ROS
+  lazy: true
+
+- gz_topic_name: "wamv/sensors/cameras/front_right_camera_sensor/camera_info"
+  ros_topic_name: "/wamv/sensors/cameras/front_right_camera_sensor/camera_info"
+  ros_type_name: "sensor_msgs/msg/CameraInfo"
+  gz_type_name: "gz.msgs.CameraInfo"
+  direction: GZ_TO_ROS
+  lazy: true
+
 # Lidar
 - gz_topic_name: "wamv/sensors/lidars/lidar_wamv_sensor/scan/points"
   ros_topic_name: "/wamv/sensors/lidars/lidar_wamv_sensor/points"

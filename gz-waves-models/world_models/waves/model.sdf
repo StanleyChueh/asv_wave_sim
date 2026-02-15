@@ -13,7 +13,7 @@
         <algorithm>fft</algorithm>
         <tile_size>256</tile_size>
         <cell_count>256</cell_count>
-        <wind_speed>5.0</wind_speed>
+        <wind_speed>20.0</wind_speed>
         <wind_angle_deg>135</wind_angle_deg>
         <steepness>2</steepness>
       </wave>
@@ -51,14 +51,14 @@
             name="gz::sim::systems::WavesVisual">
           <static>0</static>
           <mesh_deformation_method>DYNAMIC_GEOMETRY</mesh_deformation_method>
-          <tiles_x>-0 0</tiles_x>
-          <tiles_y>-0 0</tiles_y>
+          <tiles_x>-1 1</tiles_x>
+          <tiles_y>-1 1</tiles_y>
           <wave>
             <!-- `fft` wave parameters -->
             <algorithm>fft</algorithm>
             <tile_size>256</tile_size>
             <cell_count>256</cell_count>
-            <wind_speed>5.0</wind_speed>
+            <wind_speed>20.0</wind_speed>
             <wind_angle_deg>135</wind_angle_deg>
             <steepness>2</steepness>
           </wave>
