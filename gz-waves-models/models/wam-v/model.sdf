@@ -11,13 +11,15 @@
           </mesh>
         </geometry>
       </visual>
-      <collision name="collision">
+
+      <collision name="main_collision">
         <geometry>
           <mesh>
             <uri>model://wam-v/meshes/wam-v-base_collision_406.stl</uri>
           </mesh>
         </geometry>
       </collision>
+
       <inertial>
         <pose>0 0 0 0 0 0</pose>
         <mass>180</mass>
@@ -29,6 +31,15 @@
           <izz>446</izz>
         </inertia>
       </inertial>
+
+      <sensor name="wamv_contact" type="contact">
+        <always_on>true</always_on>
+        <update_rate>30</update_rate>
+        <contact>
+          <collision>main_collision</collision> 
+        </contact>
+        <topic>/vrx/contacts</topic>
+      </sensor>
     </link>
 
     <link name="gps_link">
@@ -362,6 +373,16 @@
       <p_gain>500.0</p_gain>
       <i_gain>0.5</i_gain>
       <d_gain>10.0</d_gain>
+    </plugin>
+
+    <plugin filename="gz-sim-pose-publisher-system" name="gz::sim::systems::PosePublisher">
+      <publish_link_pose>true</publish_link_pose>
+      <use_pose_vector_msg>true</use_pose_vector_msg>
+      <publish_nested_model_pose>true</publish_nested_model_pose>
+    </plugin>
+
+    <plugin filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher">
+    <topic>/model/wam-v/joint_state</topic> 
     </plugin>
 
     <!-- Thruster plugins -->

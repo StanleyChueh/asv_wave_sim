@@ -4,9 +4,32 @@
     <plugin filename="gz-sim-navsat-system" name="gz::sim::systems::NavSat">
     </plugin>
 
-    <physics name="stable_physics" type="ignored">
-      <max_step_size>0.001</max_step_size> <real_time_update_rate>1000</real_time_update_rate>
-    </physics>
+    <plugin filename="libUSVWind.so" name="vrx::USVWind">
+      <wind_obj>
+        <name>wam-v</name> <link_name>wam-v::base_link</link_name> 
+        <coeff_vector>.5 .5 .33</coeff_vector>
+      </wind_obj>
+      <wind_direction>240</wind_direction>
+      <wind_mean_velocity>15.0</wind_mean_velocity>
+      <var_wind_gain_constants>1</var_wind_gain_constants>
+      <var_wind_time_constants>2</var_wind_time_constants>
+      <random_seed>10</random_seed>
+      <update_rate>10</update_rate>
+      <topic_wind_speed>/vrx/debug/wind/speed</topic_wind_speed>
+      <topic_wind_direction>/vrx/debug/wind/direction</topic_wind_direction>
+    </plugin>
+
+    <plugin filename="libPublisherPlugin.so" name="vrx::PublisherPlugin">
+      <message type="gz.msgs.Param" topic="/vrx/wavefield/parameters" every="2.0">
+        params { key: "direction" value { type: DOUBLE double_value: 0.0 } }
+        params { key: "gain" value { type: DOUBLE double_value: 1.8 } }
+        params { key: "period" value { type: DOUBLE double_value: 5 } }
+        params { key: "steepness" value { type: DOUBLE double_value: 0 } }
+      </message>
+    </plugin>
+
+    <plugin filename="gz-sim-contact-system" name="gz::sim::systems::Contact">
+    </plugin>
 
     <spherical_coordinates>
       <surface_model>EARTH_WGS84</surface_model>
