@@ -343,13 +343,25 @@
     <plugin filename="gz-sim-joint-state-publisher-system"
       name="gz::sim::systems::JointStatePublisher">
     </plugin>
-    <plugin filename="gz-sim-apply-joint-force-system"
-      name="gz::sim::systems::ApplyJointForce">
+
+    <plugin
+      filename="gz-sim-joint-position-controller-system"
+      name="gz::sim::systems::JointPositionController">
       <joint_name>left_engine_joint</joint_name>
+      <topic>/model/wam-v/joint/left_engine_joint/cmd_pos</topic>
+      <p_gain>500.0</p_gain>
+      <i_gain>0.5</i_gain>
+      <d_gain>10.0</d_gain>
     </plugin>
-    <plugin filename="gz-sim-apply-joint-force-system"
-      name="gz::sim::systems::ApplyJointForce">
+
+    <plugin
+      filename="gz-sim-joint-position-controller-system"
+      name="gz::sim::systems::JointPositionController">
       <joint_name>right_engine_joint</joint_name>
+      <topic>/model/wam-v/joint/right_engine_joint/cmd_pos</topic>
+      <p_gain>500.0</p_gain>
+      <i_gain>0.5</i_gain>
+      <d_gain>10.0</d_gain>
     </plugin>
 
     <!-- Thruster plugins -->
@@ -419,80 +431,5 @@
           <vRDrag>1.0</vRDrag>
         </hydrodynamics>
     </plugin>
-
-    <!-- ArduPilot plugin -->
-    <plugin name="ArduPilotPlugin" filename="ArduPilotPlugin">
-      <fdm_addr>127.0.0.1</fdm_addr>
-      <fdm_port_in>9002</fdm_port_in>
-      <connectionTimeoutMaxCount>5</connectionTimeoutMaxCount>
-      <lock_step>1</lock_step>
-      <modelXYZToAirplaneXForwardZDown>0 0 0 3.141593 0 0</modelXYZToAirplaneXForwardZDown>
-      <gazeboXYZToNED>0 0 0 3.141593 0 1.57079632</gazeboXYZToNED>
-      <imuName>imu_sensor</imuName>
-
-      <!--
-        SERVO1_FUNCTION 26 (GroundSteering)
-      -->
-      <control channel="0">
-        <jointName>left_engine_joint</jointName>
-        <useForce>1</useForce>
-        <multiplier>3.1415926</multiplier>
-        <offset>-0.5</offset>
-        <servo_min>1000</servo_min>
-        <servo_max>2000</servo_max>
-        <type>POSITION</type>
-        <p_gain>500.0</p_gain>
-        <i_gain>0</i_gain>
-        <d_gain>10</d_gain>
-        <i_max>-1</i_max>
-        <i_min>0</i_min>
-        <cmd_max>5000.0</cmd_max>
-        <cmd_min>-5000.0</cmd_min>
-      </control>
-      <control channel="0">
-        <jointName>right_engine_joint</jointName>
-        <useForce>1</useForce>
-        <multiplier>3.1415926</multiplier>
-        <offset>-0.5</offset>
-        <servo_min>1000</servo_min>
-        <servo_max>2000</servo_max>
-        <type>POSITION</type>
-        <p_gain>500.0</p_gain>
-        <i_gain>0</i_gain>
-        <d_gain>10</d_gain>
-        <i_max>-1</i_max>
-        <i_min>0</i_min>
-        <cmd_max>5000.0</cmd_max>
-        <cmd_min>-5000.0</cmd_min>
-      </control>
-
-        <!--
-          SERVO3_FUNCTION 70 (Throttle)
-
-          max thrust: +/- 1500 N (larger than VRX settings of +250 N / -100 N)
-
-        -->
-      <control channel="2">
-        <jointName>left_propeller_joint</jointName>
-        <useForce>1</useForce>
-        <multiplier>3000</multiplier>
-        <offset>-0.5</offset>
-        <servo_min>1000</servo_min>
-        <servo_max>2000</servo_max>
-        <type>COMMAND</type>
-        <cmd_topic>/model/wam-v/joint/left_propeller_joint/cmd_thrust</cmd_topic>
-      </control>
-      <control channel="2">
-        <jointName>right_propeller_joint</jointName>
-        <useForce>1</useForce>
-        <multiplier>3000</multiplier>
-        <offset>-0.5</offset>
-        <servo_min>1000</servo_min>
-        <servo_max>2000</servo_max>
-        <type>COMMAND</type>
-        <cmd_topic>/model/wam-v/joint/right_propeller_joint/cmd_thrust</cmd_topic>
-      </control>
-    </plugin>
-
   </model>
 </sdf>
