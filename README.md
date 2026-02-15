@@ -1,173 +1,56 @@
-# Wave Sim
+##  ASV_WAVE_SIM
 
-[![Ubuntu Jammy CI](https://github.com/srmainwaring/asv_wave_sim/actions/workflows/ubuntu-jammy-ci.yml/badge.svg)](https://github.com/srmainwaring/asv_wave_sim/actions/workflows/ubuntu-jammy-ci.yml)
-[![macOS Ventura CI](https://github.com/srmainwaring/asv_wave_sim/actions/workflows/macos13-ventura-ci.yml/badge.svg)](https://github.com/srmainwaring/asv_wave_sim/actions/workflows/macos13-ventura-ci.yml)
-[![Cpplint](https://github.com/srmainwaring/asv_wave_sim/actions/workflows/ccplint.yml/badge.svg)](https://github.com/srmainwaring/asv_wave_sim/actions/workflows/ccplint.yml)
-[![Cppcheck](https://github.com/srmainwaring/asv_wave_sim/actions/workflows/ccpcheck.yml/badge.svg)](https://github.com/srmainwaring/asv_wave_sim/actions/workflows/ccpcheck.yml)
+For more realistic wave,ocean view, please refer to asv_wave_sim
 
-This package contains plugins that support the simulation of waves and surface vessels in [Gazebo](https://gazebosim.org/home).
+https://github.com/srmainwaring/asv_wave_sim.git
 
-![rs750_ardupilot_v3_upwind](https://user-images.githubusercontent.com/24916364/228044489-b434b1ae-c30f-4676-9415-1719ee75479b.gif)
+<img width="1835" height="884" alt="image" src="https://github.com/user-attachments/assets/c82a63f5-998d-48d2-95f6-dbc0b7a48a4a" />
 
+Kill all servers first
 
-The main branch targets [Gazebo Garden](https://gazebosim.org/docs/garden) and no longer has a dependency on ROS. 
+```
+# 1. Forcefully kill all simulation and renderer processes with root privileges
+sudo pkill -9 -f gz && sudo pkill -9 -f sim && sudo killall -9 ruby
 
-There are new features including FFT wave generation methods, ocean tiling, and support for the [Ogre2](https://github.com/OGRECave/ogre-next) render engine. There are some changes in the way that the wave parameters need to be set, but as far possible we have attempted to retain compatibility with the earlier versions. Further details are described below where you can also find a section describing [support for legacy versions of Gazebo](#legacy-versions).
+# 2. Wipe the corrupted simulation state and rendering cache
+rm -rf ~/.gz/sim/* && rm -rf ~/.gz/rendering/*
 
-## Dependencies
-
-- A working installation of [Gazebo Garden](https://gazebosim.org/docs/garden) or later including development symbols.
-
-- The simulation uses the [CGAL](https://www.cgal.org/) library for mesh manipulation and [FFTW](http://www.fftw.org/) to compute Fourier transforms. Both libraries are licensed GPL-3.0.
-
-## Ubuntu
-
-- Ubuntu 22.04 (Jammy)
-- Gazebo Sim, version 7.1.0 (Garden)
-
-Install CGAL and FFTW:
-
-```zsh
-sudo apt-get update
-sudo apt-get install libcgal-dev libfftw3-dev
+# 3. Clear general thumbnail and Gazebo cache
+rm -rf ~/.cache/thumbnails/* && rm -rf ~/.cache/gz/*
 ```
 
-## macOS
+Server
 
-- macOS 12.6 (Monterey)
-- Gazebo Sim, version 7.1.0 (Garden)
-
-Install CGAL and FFTW:
-
-```zsh
-brew update
-brew install cgal fftw
+```
+source ~/gz_ws/install/setup.bash
+export GZ_SIM_RESOURCE_PATH=~/gz_ws/src/asv_wave_sim/gz-waves-models/models:~/gz_ws/src/asv_wave_sim/gz-waves-models/world_models
+export GZ_SIM_SYSTEM_PLUGIN_PATH=~/gz_ws/install/lib
+# Note: Server doesn't usually need the NVIDIA offload, but it needs the plugin paths.
+gz sim -v4 -s -r ~/gz_ws/src/asv_wave_sim/gz-waves-models/worlds/waves.sdf
 ```
 
-## Installation
 
-### Create a workspace
+Client
 
-```bash
-mkdir -p gz_ws/src
+```
+source ~/gz_ws/install/setup.bash
+
+# Tell Gazebo where your compiled waves plugins are
+export GZ_SIM_SYSTEM_PLUGIN_PATH=$GZ_SIM_SYSTEM_PLUGIN_PATH:~/gz_ws/install/lib
+
+# Keep your existing library and rendering exports
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/ros/jazzy/opt/gz_ogre_next_vendor/lib:/opt/ros/jazzy/opt/gz_rendering_vendor/lib
+export GZ_RENDERING_BACKEND=ogre2
+
+# Launch with NVIDIA offload
+__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia gz sim -v4 -g
 ```
 
-### Clone and build the package
+ROS Gazabo Bridge
 
-Clone the `asv_wave_sim` repository:
-
-```bash
-cd ~/gz_ws/src
-git clone https://github.com/srmainwaring/asv_wave_sim.git
 ```
-
-Compile the package:
-
-#### Ubuntu
-
-```bash
-colcon build --symlink-install --merge-install --cmake-args \
--DCMAKE_BUILD_TYPE=RelWithDebInfo \
--DBUILD_TESTING=ON \
--DCMAKE_CXX_STANDARD=17
+taskset -c 6,7  ros2 run ros_gz_bridge parameter_bridge --ros-args -p config_file:=wamv_bridge.yaml
 ```
-
-Source the workspace:
-
-```bash
-source ./install/setup.bash
-```
-
-#### macOS
-
-```bash
-colcon build --symlink-install --merge-install --cmake-args \
--DCMAKE_BUILD_TYPE=RelWithDebInfo \
--DBUILD_TESTING=ON \
--DCMAKE_CXX_STANDARD=17 \
--DCMAKE_MACOSX_RPATH=FALSE \
--DCMAKE_INSTALL_NAME_DIR=$(pwd)/install/lib
-```
-
-Source the workspace:
-
-```bash
-source ./install/setup.zsh
-```
-
-### Build the GUI plugin (optional) 
-
-There is an optional GUI plugin that controls the wave parameters.
-
-```bash
-cd ~/gz_ws/src/asv_wave_sim/gz-waves/src/gui/plugins/waves_control 
-mkdir build && cd build
-cmake .. && make
-```
-
-## Usage
-
-### Set environment variables
-
-```bash
-# for future use - to support multiple Gazebo versions
-export GZ_VERSION=garden
-
-# not usually required as should default to localhost address
-export GZ_IP=127.0.0.1
-
-# ensure the model and world files are found
-export GZ_SIM_RESOURCE_PATH=\
-$GZ_SIM_RESOURCE_PATH:\
-$HOME/gz_ws/src/asv_wave_sim/gz-waves-models/models:\
-$HOME/gz_ws/src/asv_wave_sim/gz-waves-models/world_models:\
-$HOME/gz_ws/src/asv_wave_sim/gz-waves-models/worlds
-
-# ensure the system plugins are found
-export GZ_SIM_SYSTEM_PLUGIN_PATH=\
-$GZ_SIM_SYSTEM_PLUGIN_PATH:\
-$HOME/gz_ws/install/lib
-
-# ensure the gui plugin is found
-export GZ_GUI_PLUGIN_PATH=\
-$GZ_GUI_PLUGIN_PATH:\
-$HOME/gz_ws/src/asv_wave_sim/gz-waves/src/gui/plugins/waves_control/build
-```
-
-### Ubuntu VM
-
-If running on an Ubuntu virtual machine you may need to use software rendering if the hypervisor does not support hardware acceleration for OpenGL 4.2+. Install `mesa-utils` to enable llvmpipe:
-
-```bash
-sudo apt-get install mesa-utils
-```
-
-To use the llvmpipe software renderer, prefix Gazebo commands with the `LIBGL_ALWAYS_SOFTWARE` environment variable:
-
-```bash
-LIBGL_ALWAYS_SOFTWARE=1 gz sim waves.sdf
-```
-
-## Examples
-
-On macOS the client and server must be launched separately. The commands may be combined on Ubuntu.
-
-Launch a Gazebo session.
-
-Server:
-
-```bash
-gz sim -v4 -s -r waves.sdf
-```
-
-Client:
-
-```bash
-gz sim -v4 -g
-```
-
-The session should include a wave field and some floating objects.
-
 ## Changes
 
 There are some changes to the plugin SDF schema for hydrodynamics and waves.   
