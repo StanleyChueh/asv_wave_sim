@@ -50,6 +50,7 @@ __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia gz sim -v4 -g
 ROS Gazabo Bridge
 
 ```
+cd ~/gz_ws/
 taskset -c 6,7  ros2 run ros_gz_bridge parameter_bridge --ros-args -p config_file:=src/asv_wave_sim/wamv_bridge.yaml
 ```
 ## Changes
