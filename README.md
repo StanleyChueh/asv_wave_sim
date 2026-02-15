@@ -26,6 +26,7 @@ source ~/gz_ws/install/setup.bash
 export GZ_SIM_RESOURCE_PATH=~/gz_ws/src/asv_wave_sim/gz-waves-models/models:~/gz_ws/src/asv_wave_sim/gz-waves-models/world_models
 export GZ_SIM_SYSTEM_PLUGIN_PATH=~/gz_ws/install/lib
 # Note: Server doesn't usually need the NVIDIA offload, but it needs the plugin paths.
+export GZ_SIM_SYSTEM_PLUGIN_PATH=$GZ_SIM_SYSTEM_PLUGIN_PATH:/home/hsiao/vrx_ws/install/lib
 gz sim -v4 -s -r ~/gz_ws/src/asv_wave_sim/gz-waves-models/worlds/waves.sdf
 ```
 
@@ -49,7 +50,7 @@ __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia gz sim -v4 -g
 ROS Gazabo Bridge
 
 ```
-taskset -c 6,7  ros2 run ros_gz_bridge parameter_bridge --ros-args -p config_file:=wamv_bridge.yaml
+taskset -c 6,7  ros2 run ros_gz_bridge parameter_bridge --ros-args -p config_file:=src/asv_wave_sim/wamv_bridge.yaml
 ```
 ## Changes
 
