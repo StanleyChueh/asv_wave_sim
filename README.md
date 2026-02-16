@@ -1,9 +1,5 @@
 ##  ASV_WAVE_SIM
 
-For more realistic wave,ocean view, please refer to asv_wave_sim
-
-https://github.com/srmainwaring/asv_wave_sim.git
-
 <img width="1835" height="884" alt="image" src="https://github.com/user-attachments/assets/c82a63f5-998d-48d2-95f6-dbc0b7a48a4a" />
 
 Kill all servers first
@@ -53,6 +49,31 @@ ROS Gazabo Bridge
 cd ~/gz_ws/
 taskset -c 6,7  ros2 run ros_gz_bridge parameter_bridge --ros-args -p config_file:=src/asv_wave_sim/wamv_bridge.yaml
 ```
+
+## Wind & Wave Adjustment
+
+Try FFT method
+
+```
+source ~/gz_ws/install/setup.bash
+export GZ_SIM_RESOURCE_PATH=~/gz_ws/src/asv_wave_sim/gz-waves-models/models:~/gz_ws/src/asv_wave_sim/gz-waves-models/world_models
+export GZ_SIM_SYSTEM_PLUGIN_PATH=~/gz_ws/install/lib
+# Note: Server doesn't usually need the NVIDIA offload, but it needs the plugin paths.
+export GZ_SIM_RESOURCE_PATH=$GZ_SIM_RESOURCE_PATH:/home/hsiao/gz_ws/src/asv_wave_sim/gz-waves-models/world_models
+gz sim -v4 -s -r ~/gz_ws/src/asv_wave_sim/gz-waves-models/worlds/waves.sdf
+```
+
+Try VRX built-in method
+
+```
+source ~/gz_ws/install/setup.bash
+export GZ_SIM_RESOURCE_PATH=~/gz_ws/src/asv_wave_sim/gz-waves-models/models:~/gz_ws/src/asv_wave_sim/gz-waves-models/world_models
+export GZ_SIM_SYSTEM_PLUGIN_PATH=~/gz_ws/install/lib
+# Note: Server doesn't usually need the NVIDIA offload, but it needs the plugin paths.
+export GZ_SIM_SYSTEM_PLUGIN_PATH=$GZ_SIM_SYSTEM_PLUGIN_PATH:/home/hsiao/vrx_ws/install/lib
+gz sim -v4 -s -r ~/gz_ws/src/asv_wave_sim/gz-waves-models/worlds/waves.sdf
+```
+
 ## Changes
 
 There are some changes to the plugin SDF schema for hydrodynamics and waves.   
